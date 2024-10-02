@@ -1,0 +1,36 @@
+# CMake build directory
+/build/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+CMakeOutput.log
+CMakeError.log
+
+# Executable files
+gpt-on-terminal
+
+# Object files
+*.o
+
+# Dependency files
+*.d
+
+# Compiled library files
+*.so
+*.a
+*.dll
+*.lib
+
+# Visual Studio
+.vs/
+*.sln
+*.vcxproj
+.vscode
+*.vcxproj.user
+
+# Makefile
+Makefile
+Makefile.in
+
+.DS_Store
