@@ -146,10 +146,12 @@ bool verify_request(std::string_view prompt, std::string_view file_path,
         std::cerr << "Invalid end line number" << std::endl;
         return false;
       }
-      if(start_line_number > end_line_number || end_line_number - start_line_number + 1 > MAX_LINES) {
-        std::cerr << "Invalid line number range. Only " << MAX_LINES << " lines are acceptable" << std::endl;
+      if (start_line_number > end_line_number ||
+          end_line_number - start_line_number + 1 > MAX_LINES) {
+        std::cerr << "Invalid line number range. Only " << MAX_LINES
+                  << " lines are acceptable" << std::endl;
         return false;
-      } 
+      }
     } else {
       uint32_t line_number_int;
       auto result = std::from_chars(line_number.data(),
