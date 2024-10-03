@@ -33,8 +33,8 @@ std::string extract_code(std::string_view file_path,
                          std::string_view line_number) {
   uint32_t starting_line_number, ending_line_number;
   if (line_number.empty()) {
-    starting_line_number = 0;
-    ending_line_number = INF;
+    starting_line_number = 1;
+    ending_line_number = MAX_LINES;
   } else if (line_number.find("-") == std::string::npos) {
     auto result = std::from_chars(line_number.data(),
                                   line_number.data() + line_number.size(),
@@ -52,7 +52,7 @@ std::string extract_code(std::string_view file_path,
   std::string extracted_code;
   std::ifstream file(file_path.data());
   if (!file.is_open()) {
-    std::cerr << "Unable to open the required file" << std::endl;
+    std::cerr << "Unable to open the required code file" << std::endl;
     exit(1);
   }
   std::string extracted_line;
@@ -171,7 +171,7 @@ std::string process_request(std::string_view prompt, std::string_view file_path,
   std::string extracted_code =
       !file_path.empty() ? extract_code(file_path, line_number) : "";
   std::string final_prompt = std::string(INITIAL_PROMPT) + std::string(prompt) +
-                             "\n" + extracted_code + "\n";
+                             "\n" + "Attached Code:\n" + extracted_code + "\n";
   return call_gpt_api(final_prompt);
 }
 
