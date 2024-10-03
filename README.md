@@ -1,4 +1,4 @@
-GPT on Terminal
+# GPT on Terminal
 
 A small terminal tool that let's you prompt GPT on your terminal. 
 
