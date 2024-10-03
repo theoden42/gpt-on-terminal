@@ -7,6 +7,7 @@
 
 #include "gtot_api.hpp"
 #include "json.hpp"
+#include "openai.hpp"
 
 using json = nlohmann::json;
 
@@ -75,37 +76,14 @@ static size_t WriteCallback(void *contents, size_t size, size_t nmemb,
 
 std::string call_gpt_api(std::string_view prompt) {
   std::string api_key = get_api_key_env_var();
-  CURL *curl;
-  CURLcode res;
-  std::string read_buffer;
-  curl = curl_easy_init();
-  if (!curl) {
-    std::cerr << "Uanble to set up Curl\n" << std::endl;
-    exit(1);
-  }
-  json request_message = {
-      {"model", "gpt-3.5-turbo"},
-      {"messages", {{{"role", "user"}, {"content", prompt}}}}};
-  struct curl_slist *headers = NULL;
-  headers = curl_slist_append(headers, "Content-Type: application/json");
-  headers =
-      curl_slist_append(headers, ("Authorization: Bearer " + api_key).c_str());
-  curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
-  curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
-  curl_easy_setopt(curl, CURLOPT_POSTFIELDS, request_message.dump().c_str());
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &read_buffer);
-  res = curl_easy_perform(curl);
-  if (res != CURLE_OK) {
-    std::cerr << "The API request failed with error" << curl_easy_strerror(res)
-              << std::endl;
-    curl_easy_cleanup(curl);
-    curl_slist_free_all(headers);
-    exit(1);
-  }
-  curl_easy_cleanup(curl);
-  curl_slist_free_all(headers);
-  return read_buffer;
+  openai::start(api_key);
+  auto completion = openai::completion::create(
+      R"({
+        "model":"gpt-3.5-turbo",
+        "prompt": ")" +
+      std::string(prompt) + R"("
+    })"_json);
+  return completion.dump();
 }
 
 } // namespace
@@ -176,7 +154,24 @@ std::string process_request(std::string_view prompt, std::string_view file_path,
 }
 
 void output_response(std::string_view response) {
+  // std::cout << response << std::endl;
+  json response_json;
+  try {
+    response_json = json::parse(response);
+  } catch (json::parse_error &e) {
+    std::cerr << "Error parsing the response from the API" << std::endl;
+    exit(1);
+  }
+  if (response_json["error"] != nullptr) {
+    std::cout << "Model API Erred!" << std::endl;
+    std::cerr << "Query failed due to following error\n"
+              << response_json["error"]["message"] << std::endl;
+    exit(1);
+  }
   std::cout << response << std::endl;
+  std::string generated_text =
+      response_json["choices"][0]["message"]["content"];
+  std::cout << generated_text << std::endl;
 }
 
 } // namespace gtot_api
