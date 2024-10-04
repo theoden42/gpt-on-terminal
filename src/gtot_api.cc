@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <string_view>
+#include <cerrno> 
 
 #include "gtot_api.hpp"
 #include "json.hpp"
@@ -60,6 +61,7 @@ std::string extract_code(std::string_view file_path,
   std::ifstream file(file_path.data());
   if (!file.is_open()) {
     std::cerr << "Unable to open the required code file" << std::endl;
+    std::cerr << "Error: " << strerror(errno) << std::endl;
     exit(1);
   }
   std::string extracted_line;
@@ -69,6 +71,7 @@ std::string extract_code(std::string_view file_path,
         current_line_number <= ending_line_number) {
       extracted_code += extracted_line + "\n";
     }
+    current_line_number += 1;
   }
   return extracted_code;
 }
@@ -118,12 +121,13 @@ bool verify_request(std::string_view prompt, std::string_view file_path,
       auto result = std::from_chars(start_line.data(),
                                     start_line.data() + start_line.size(),
                                     start_line_number);
-      if (result.ec == std::errc()) {
+      if (result.ec != std::errc()) {
         std::cerr << "Invalid start line number" << std::endl;
+        return false;
       }
       result = std::from_chars(
           end_line.data(), end_line.data() + end_line.size(), end_line_number);
-      if (result.ec == std::errc()) {
+      if (result.ec != std::errc()) {
         std::cerr << "Invalid end line number" << std::endl;
         return false;
       }
@@ -138,7 +142,7 @@ bool verify_request(std::string_view prompt, std::string_view file_path,
       auto result = std::from_chars(line_number.data(),
                                     line_number.data() + line_number.size(),
                                     line_number_int);
-      if (result.ec == std::errc()) {
+      if (result.ec != std::errc()) {
         std::cerr << "Invalid line number" << std::endl;
         return false;
       }
@@ -165,7 +169,7 @@ void output_response(std::string_view response) {
     exit(1);
   }
   std::string model_reponse = response_json["choices"][0]["message"]["content"].get<std::string>();
-  std::cout << BOLD <<  GREEN << "Model Reponse: " << std::endl << RESET;
-  std::cout << BOLD << model_reponse << std::endl;
+  std::cout << BOLD << GREEN << "Model Reponse: " << std::endl << RESET;
+  std::cout << BOLD << YELLOW << model_reponse << std::endl;
 }
 } // namespace gtot_api
