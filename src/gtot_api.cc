@@ -9,13 +9,19 @@
 #include "json.hpp"
 #include "openai.hpp"
 
+#define RESET   "\033[0m"
+#define RED     "\033[31m"
+#define GREEN   "\033[32m"
+#define YELLOW  "\033[33m"
+#define BOLD    "\033[1m"
+
 using json = nlohmann::json;
 
 const uint32_t INF = 1000000;
 const uint32_t MAX_LINES = 50;
 constexpr const char *INITIAL_PROMPT =
     "Suppose a user is giving you the following prompt and after the prompt "
-    "ends, the code for the issue is attached.\n";
+    "ends, the code for the issue may or may not be attached.\n Answer aproppriately.";
 const std::string url = "https://api.openai.com/v1/chat/completions";
 
 namespace gtot_api {
@@ -67,22 +73,19 @@ std::string extract_code(std::string_view file_path,
   return extracted_code;
 }
 
-static size_t WriteCallback(void *contents, size_t size, size_t nmemb,
-                            std::string *s) {
-  size_t total_size = size * nmemb;
-  s->append((char *)contents, total_size);
-  return total_size;
-}
-
 std::string call_gpt_api(std::string_view prompt) {
   std::string api_key = get_api_key_env_var();
   openai::start(api_key);
-  auto completion = openai::completion::create(
-      R"({
-        "model":"gpt-3.5-turbo",
-        "prompt": ")" +
-      std::string(prompt) + R"("
-    })"_json);
+  json payload_json, completion;
+  try {
+    payload_json["model"] = "gpt-3.5-turbo";
+    payload_json["messages"] = {{{"role", "user"}, {"content", prompt}}};
+    completion = openai::chat().create(payload_json);
+  } catch (std::exception &e) {
+    std::cerr << "Error in calling the GPT API" << std::endl;
+    std::cerr << e.what() << std::endl; 
+    exit(1);
+  }
   return completion.dump();
 }
 
@@ -154,7 +157,6 @@ std::string process_request(std::string_view prompt, std::string_view file_path,
 }
 
 void output_response(std::string_view response) {
-  // std::cout << response << std::endl;
   json response_json;
   try {
     response_json = json::parse(response);
@@ -162,16 +164,8 @@ void output_response(std::string_view response) {
     std::cerr << "Error parsing the response from the API" << std::endl;
     exit(1);
   }
-  if (response_json["error"] != nullptr) {
-    std::cout << "Model API Erred!" << std::endl;
-    std::cerr << "Query failed due to following error\n"
-              << response_json["error"]["message"] << std::endl;
-    exit(1);
-  }
-  std::cout << response << std::endl;
-  std::string generated_text =
-      response_json["choices"][0]["message"]["content"];
-  std::cout << generated_text << std::endl;
+  std::string model_reponse = response_json["choices"][0]["message"]["content"].get<std::string>();
+  std::cout << BOLD <<  GREEN << "Model Reponse: " << std::endl << RESET;
+  std::cout << BOLD << model_reponse << std::endl;
 }
-
 } // namespace gtot_api
