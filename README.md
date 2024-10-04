@@ -10,7 +10,7 @@ A small terminal tool that let's you prompt GPT on your terminal.
  - run ```cmake ..``` to create require buildfile 
  - run ```make``` to create the executable `gpt-on-terminal`
 
-2. If you trust me a lot. Directly download executable from [here]().
+2. If you trust me a lot. Directly download executable from [here](https://github.com/theoden42/gpt-on-terminal/releases/tag/v1.0.0).
 
 ### (Optional) Alias set up
 1. Move the executable to `~/scripts`(or anywhere you want). 
@@ -22,7 +22,7 @@ A small terminal tool that let's you prompt GPT on your terminal.
 1. Get the API key from [OpenAI](https://openai.com/index/openai-api/). 
 2. Set an Envirionment variable OPENAI_API_KEY to the API key obtained above.
 ```export OPENAI_API_KEY="some_value"```
-3. Use gtot --help to get a short man page. 
+3. Use ```gtot --help``` to get a short man page. 
 
 #### Example Usage
 Query: 
