@@ -26,9 +26,10 @@ A small terminal tool that let's you prompt GPT on your terminal.
 
 #### Example Usage
 Query: 
-`bash
+```bash
 ./gpt-on-terminal -p "suggest a concise way write the code for this" -f "../src/gtot_api.cc" -l "140-151"
-`
+```
+
 Reponse: 
 ```
 To make the code more concise, we can remove unnecessary brackets and shorten the error message:
