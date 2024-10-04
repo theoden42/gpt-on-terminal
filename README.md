@@ -10,7 +10,7 @@ A small terminal tool that let's you prompt GPT on your terminal.
  - run ```cmake ..``` to create require buildfile 
  - run ```make``` to create the executable `gpt-on-terminal`
 
-2. If you trust me a lot. Directly download executable from [here](https://github.com/theoden42/gpt-on-terminal/releases/tag/v1.0.0).
+2. If you trust me a lot. Directly download executable from [here](https://github.com/theoden42/gpt-on-terminal/releases/tag/v1.0.0)(macos).
 
 ### (Optional) Alias set up
 1. Move the executable to `~/scripts`(or anywhere you want). 
