@@ -169,7 +169,7 @@ void output_response(std::string_view response) {
     exit(1);
   }
   std::string model_reponse = response_json["choices"][0]["message"]["content"].get<std::string>();
-  std::cout << BOLD << GREEN << "Model Reponse: " << std::endl << RESET;
+  std::cout << BOLD <<  GREEN << "Model Reponse: " << std::endl << RESET;
   std::cout << BOLD << YELLOW << model_reponse << std::endl;
 }
 } // namespace gtot_api

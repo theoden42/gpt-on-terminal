@@ -21,4 +21,27 @@ A small terminal tool that let's you prompt GPT on your terminal.
 
 1. Get the API key from [OpenAI](https://openai.com/index/openai-api/). 
 2. Set an Envirionment variable OPENAI_API_KEY to the API key obtained above.
-3. Use gptot --help to get a short man page. 
+```export OPENAI_API_KEY="some_value"```
+3. Use gtot --help to get a short man page. 
+
+#### Example Usage
+Query: 
+`bash
+./gpt-on-terminal -p "suggest a concise way write the code for this" -f "../src/gtot_api.cc" -l "140-151"
+`
+Reponse: 
+```
+To make the code more concise, we can remove unnecessary brackets and shorten the error message:
+
+Attached Code:
+      uint32_t line_number_int;
+      auto result = std::from_chars(line_number.data(), line_number.data() + line_number.size(), line_number_int);
+      if (result.ec != std::errc()) {
+        std::cerr << "Invalid line number" << std::endl;
+        return false;
+      }
+
+  return true;
+```
+
+
